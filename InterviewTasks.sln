@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SequenceTask", "SequenceTask\SequenceTask.csproj", "{A22CAC57-1E6F-4DF5-B744-42330AC40697}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FrogTask", "FrogTask\FrogTask.csproj", "{71CBDCDE-E798-4AC2-A793-1680B45A0E6E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A22CAC57-1E6F-4DF5-B744-42330AC40697}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A22CAC57-1E6F-4DF5-B744-42330AC40697}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A22CAC57-1E6F-4DF5-B744-42330AC40697}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A22CAC57-1E6F-4DF5-B744-42330AC40697}.Release|Any CPU.Build.0 = Release|Any CPU
+		{71CBDCDE-E798-4AC2-A793-1680B45A0E6E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71CBDCDE-E798-4AC2-A793-1680B45A0E6E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71CBDCDE-E798-4AC2-A793-1680B45A0E6E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71CBDCDE-E798-4AC2-A793-1680B45A0E6E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
