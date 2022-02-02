@@ -14,7 +14,9 @@ namespace SequenceTask
             var n = GetN();
             var set = GetMultiSet(n);
             var x0 = (int)Math.Ceiling(Math.Sqrt(set.Max()));
-            Console.WriteLine(x0); //fix good output
+            if (x0%2==0) x0++;
+            
+            Console.WriteLine(x0); 
         }
 
         private static int GetN()
