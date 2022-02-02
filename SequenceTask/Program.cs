@@ -2,24 +2,30 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO.Compression;
 using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace SequenceTask
 {
-    class Program
+    public class SequenceProgram
     {
         static void Main(string[] args)
         {
             var n = GetN();
             var set = GetMultiSet(n);
-            var x0 = (int)Math.Ceiling(Math.Sqrt(set.Max()));
-            if (x0%2==0) x0++;
+            var x0 = GetX0(set);
             
-            Console.WriteLine(x0); 
+            Console.WriteLine($"x0 = {x0}");
         }
 
-        private static int GetN()
+
+        public static ulong GetX0(IEnumerable<ulong> set)
+        {
+            return (ulong)(Math.Round(Math.Sqrt(set.Max())) + 1);
+        }
+
+        public static int GetN()
         {
             while (true)
             {
@@ -73,6 +79,18 @@ namespace SequenceTask
 
             Console.WriteLine("wrong input, try again");
             goto StartInput;
+        }
+
+        public static IEnumerable<ulong> GetMockMultiSet(int n, ulong min = 1, ulong max = 4294967295)
+        {
+            var r = new Random();
+            var set = new List<ulong>();
+            for (var i = 0; i < n; i++)
+            {
+                set.Add(r.GetRandomULong(min, max));
+            }
+
+            return set;
         }
     }
 }
