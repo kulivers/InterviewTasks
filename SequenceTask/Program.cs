@@ -81,16 +81,6 @@ namespace SequenceTask
             goto StartInput;
         }
 
-        public static IEnumerable<ulong> GetMockMultiSet(int n, ulong min = 1, ulong max = 4294967295)
-        {
-            var r = new Random();
-            var set = new List<ulong>();
-            for (var i = 0; i < n; i++)
-            {
-                set.Add(r.GetRandomULong(min, max));
-            }
-
-            return set;
-        }
+        
     }
 }

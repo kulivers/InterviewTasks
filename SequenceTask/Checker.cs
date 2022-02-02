@@ -6,11 +6,24 @@ namespace SequenceTask
 {
     public class Checker
     {
+
+        public static IEnumerable<ulong> GetMockMultiSet(int n, ulong min = 1, ulong max = 4294967295)
+        {
+            var r = new Random();
+            var set = new List<ulong>();
+            for (var i = 0; i < n; i++)
+            {
+                set.Add(r.GetRandomULong(min, max));
+            }
+        
+            return set;
+        }
+        
         public static void IndexTest()
         {
             while (true)
             {
-                var set = SequenceProgram.GetMockMultiSet(100).OrderByDescending(x => x).ToList();
+                var set = GetMockMultiSet(100, max: 200).OrderByDescending(x => x).ToList();
 
                 // var set = new List<ulong>() { 3,4 }.OrderByDescending(x=>x).ToList();//test
 
