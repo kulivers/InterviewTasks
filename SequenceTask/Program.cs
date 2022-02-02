@@ -16,7 +16,7 @@ namespace SequenceTask
             var set = GetMultiSet(n);
             var x0 = GetX0(set);
             
-            Console.WriteLine($"x0 = {x0}");
+            Console.WriteLine(x0);
         }
 
 
