@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace SequenceTask
@@ -10,45 +12,9 @@ namespace SequenceTask
         static void Main(string[] args)
         {
             var n = GetN();
-            // var set = GetMultiSet(n);
-        }
-
-        private static long GetNextSeqValue(ulong x, ulong a)
-        {
-            checked
-            {
-                return (long)(x * x - a); //mb out of range in x^2
-            }
-        }
-
-        private ulong LongRandom(ulong min, ulong max, Random rand) //1 - make random generator 
-        {
-            var buf = new byte[8];
-            rand.NextBytes(buf);
-            var longRand = BitConverter.ToUInt64(buf, 0);
-            return (ulong)(Math.Abs((ulong)(longRand % (ulong)(max - min))) + min);
-        }
-
-        private static IEnumerable<ulong> GenerateMockMultiSet(int n) //2 - make GenerateMockMultiSet 
-        {
-            yield return LongRandom((ulong)1, (ulong)Math.Pow(10,18));
-        }
-
-        private static IEnumerable<ulong> GetMultiSet(int n)
-        {
-            Console.WriteLine($"now input {n} digits");
-
-            var seq = new List<ulong>(n);
-            var input = Console.ReadLine();
-
-            //should i validate for null input and not n values and do try parse?
-            for (var match = Regex.Match(input, @"\d+"); match.Success; match = match.NextMatch())
-            {
-                var a = int.Parse(match.Value, NumberFormatInfo.InvariantInfo);
-                seq.Add((ulong)a);
-            }
-
-            return seq;
+            var set = GetMultiSet(n);
+            var x0 = (int)Math.Ceiling(Math.Sqrt(set.Max()));
+            Console.WriteLine(x0); //fix good output
         }
 
         private static int GetN()
@@ -59,7 +25,7 @@ namespace SequenceTask
                 var val = Console.ReadLine();
                 if (int.TryParse(val, out int n)) //check floating point validation?
                 {
-                    if (n > 1 && n <= Math.Pow(10, 5))
+                    if (n >= 1 && n <= Math.Pow(10, 5))
                     {
                         return n;
                     }
@@ -67,6 +33,56 @@ namespace SequenceTask
 
                 Console.WriteLine("wrong value, please input correct value");
             }
+        }
+
+        private static List<ulong> GetMockMultiSet(int n)
+        {
+            var r = new Random();
+            var set = new List<ulong>();
+            for (var i = 0; i < n; i++)
+            {
+                set.Add(r.GetRandomULong(1, (ulong)Math.Pow(10, 18)));
+            }
+
+            return set;
+        }
+
+        
+        private static IEnumerable<ulong> GetMultiSet(int n)
+        {
+            Console.WriteLine($"now input {n} digits");
+            var seq = new List<ulong>(n);
+
+            int countOfDigits;
+
+            StartInput:
+            countOfDigits = 0;
+            var input = Console.ReadLine();
+            if (input != null)
+                for (var match = Regex.Match(input, @"\d+"); match.Success; match = match.NextMatch())
+                {
+                    countOfDigits++;
+                    var a = int.Parse(match.Value, NumberFormatInfo.InvariantInfo);
+
+
+                    if (a < 1 || a > Math.Pow(10, 18))
+                    {
+                        Console.WriteLine("wrong input, try again");
+                        goto StartInput;
+                    }
+
+                    seq.Add((ulong)a);
+                }
+            else
+            {
+                Console.WriteLine("wrong input, try again");
+                goto StartInput;
+            }
+
+            if (countOfDigits == n) return seq;
+
+            Console.WriteLine("wrong input, try again");
+            goto StartInput;
         }
     }
 }
