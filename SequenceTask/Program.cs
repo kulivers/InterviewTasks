@@ -35,19 +35,7 @@ namespace SequenceTask
             }
         }
 
-        private static List<ulong> GetMockMultiSet(int n)
-        {
-            var r = new Random();
-            var set = new List<ulong>();
-            for (var i = 0; i < n; i++)
-            {
-                set.Add(r.GetRandomULong(1, (ulong)Math.Pow(10, 18)));
-            }
 
-            return set;
-        }
-
-        
         private static IEnumerable<ulong> GetMultiSet(int n)
         {
             Console.WriteLine($"now input {n} digits");
