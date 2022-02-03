@@ -22,6 +22,7 @@ namespace FrogTask
         public void MakeJump()
         {
             CurrentPointIdx += NextJumpValue;
+            JumpsCount++;
         }
 
         public void Fall(int fallValue)
@@ -142,17 +143,24 @@ namespace FrogTask
     public partial class Population
     {
         public HashSet<Frog> Frogs { get; set; }
-        public HashSet<int> ReachedPointsIdxs { get; set; }
+        public Dictionary<int, int> ReachedPointsIdxs { get; set; }
         public int StepCounter { get; set; }
         public int[] Jumps { get; set; }
         public int[] Falls { get; set; }
+
+        public bool GameOver { get; set; }
 
         public Population(int[] jumps, int[] falls)
         {
             Jumps = jumps;
             Falls = falls;
             Frogs = new HashSet<Frog>();
-            ReachedPointsIdxs = new HashSet<int>();
+            ReachedPointsIdxs = new Dictionary<int, int>//idx - reached
+            {
+                { 0, 1 }
+            };
+            StepCounter = 0;
+            GameOver = false;
         }
 
         void CreateAdam() // first frog
@@ -172,15 +180,7 @@ namespace FrogTask
             }
         }
 
-        public void KillFrogsOnReachedPoss() //after jump - kill frogs on Reached positions
-        {
-            // if frog current point have been reached BEFORE - Kill frog
-            //удалить фрогов у которых больше степов чем у лучшей
-
-            //если нету мест куда прыгнуть и не конец - убивать
-        }
-
-        public void MakeJumpsAll()
+        public void MakeJumpsAll() //test
         {
             foreach (var frog in Frogs)
             {
@@ -188,29 +188,96 @@ namespace FrogTask
             }
         }
 
-        public void MakeFallsAll()
+        public void MakeFallsAll() //test
         {
+            IEnumerable<Frog> frogsOnI;
             for (var i = 0; i < Falls.Length; i++)
             {
-                
+                var i1 = i;
+                frogsOnI = Frogs.Where(f => f.CurrentPointIdx == i1);
+                foreach (var frog in frogsOnI)
+                {
+                    frog.Fall(Falls[i]);
+                }
             }
+        }
+
+
+        public void ValidateFrogsPositionsAfterJump()
+        {
+            foreach (var frog in Frogs)
+            {
+                if (frog.CurrentPointIdx < 0)
+                {
+                    frog.CurrentPointIdx = 0;
+                }
+
+                if (frog.CurrentPointIdx> Jumps.Length)
+                {
+                    GameOver = true;
+                    StepCounter = frog.JumpsCount;
+                }
+            }
+        }
+        public void SaveFrogsInReached() 
+        {
+            foreach (var frogPos in Frogs.Select(f => f.CurrentPointIdx))
+            {
+                var isValInReached = ReachedPointsIdxs.ContainsKey(frogPos);
+                if (isValInReached)
+                    ReachedPointsIdxs[frogPos]++;
+                else
+                    ReachedPointsIdxs.Add(frogPos, 1);
+            }
+        }
+
+        public void KillFrogsOnReachedPoss() //after jump - kill frogs on Reached positions
+        {
+            //удалить фрогов у которых больше степов чем у лучшей?
+            
+            // foreach (var frog in Frogs)
+            // {
+            //     //just check, mb delete
+            //     var isValInReached = ReachedPointsIdxs.ContainsKey(frog.CurrentPointIdx); //comment
+            //     if (!isValInReached)
+            //         throw new Exception("why frog is on not reached once position?");
+            //
+            //     
+            //     if (ReachedPointsIdxs[frog.CurrentPointIdx] > 1)
+            //     {
+            //         Frogs.Remove(frog);
+            //     }
+            // }
+
+            var ret = Frogs.RemoveWhere(f => f.CurrentPointIdx == 0);
+            
+            // Frogs.RemoveWhere(f =>
+            // {
+            //     var isValInReached = ReachedPointsIdxs.ContainsKey(f.CurrentPointIdx); //delete
+            //     if (!isValInReached)
+            //         throw new Exception("why frog is on not reached once position?");
+            //     return ReachedPointsIdxs[f.CurrentPointIdx] > 1;
+            // });
+
         }
 
         public int Simulate()
         {
             CreateAdam();
-            return 1;
             while (true)
             {
                 if (Frogs.Count == 0)
-                {
                     return -1;
-                }
                 else
                 {
-                    //create недостающих фрогс, мб не делать где есть ричед после сл прыжка
-
-                    //удалить ненужных
+                    CreateAllFrogsForAvailableJumps();
+                    MakeJumpsAll();
+                    MakeFallsAll();
+                    ValidateFrogsPositionsAfterJump();
+                    KillFrogsOnReachedPoss();
+                    SaveFrogsInReached();
+                    if (GameOver)
+                        return StepCounter;
                 }
             }
         }
@@ -226,7 +293,8 @@ namespace FrogTask
             var jumps = avalibleJumps as int[] ?? avalibleJumps.ToArray();
             var falls = fallsAfterJumps as int[] ?? fallsAfterJumps.ToArray();
             var pop = new Population(jumps, falls);
-            pop.Simulate();
+            var res = pop.Simulate();
+            Console.WriteLine("res: " + res);
         }
     }
 

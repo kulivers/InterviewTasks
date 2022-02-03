@@ -15,13 +15,25 @@ namespace FrogTask.Tests
             var pop = new Population(jumps, falls);
 
 
-            IOValuesHelper.CoutSetByNRaws(avalibleJumps, 5);
+            // IOValuesHelper.CoutSetByNRaws(avalibleJumps, 5);
 
             // TestCreatingAndKilling(pop);
             // TestCreatingFrogsOnAllPositions(pop);
             
+            pop.Frogs = GetMockFrogs(pop);
+
+            foreach (var frog in pop.Frogs)
+            {
+                if (frog.CurrentPointIdx ==1)
+                {
+                    pop.Frogs.Remove(frog);
+                }
+            }
+            ShowFrogs(pop.Frogs.Where(f=>f.CurrentPointIdx==1));
+            
         }
 
+        
         private static void ShowFrogs(IEnumerable<Frog> frogs)
         {
             foreach (var frog in frogs)
@@ -48,6 +60,7 @@ namespace FrogTask.Tests
         {
             var frogs = pop.Frogs.ToList();
             frogs.Add(new Frog(1, 1, 5));
+            frogs.Add(new Frog(1, 1, 4));
             frogs.Add(new Frog(1, 2, 4));
             frogs.Add(new Frog(1, 2, 4));
             frogs.Add(new Frog(1, 2, 4));
