@@ -8,7 +8,7 @@ namespace FrogTask
 {
     public class Frog
     {
-        public List<int> History { get; set; }
+        // public List<int> History { get; set; }
         public int JumpsCount { get; set; } //set here best frog at this point
         public int CurrentPointIdx { get; set; }
         public int NextJumpValue { get; set; }
@@ -18,20 +18,20 @@ namespace FrogTask
             JumpsCount = jumpsCount;
             CurrentPointIdx = currentPoint;
             NextJumpValue = nextJumpValue;
-            History = new List<int>();
+            // History = new List<int>();
         }
 
         public void MakeJump()
         {
             CurrentPointIdx += NextJumpValue;
             JumpsCount++;
-            History.Add(CurrentPointIdx);
+            // History.Add(CurrentPointIdx);
         }
 
         public void Fall(int fallValue)
         {
             CurrentPointIdx -= fallValue;
-            History.Add(CurrentPointIdx);
+            // History.Add(CurrentPointIdx);
         }
 
         // public override int GetHashCode()
@@ -107,11 +107,11 @@ namespace FrogTask
                     GameOver = true;
                     StepCounter = frogsAtI.Select(f => f.JumpsCount).First();
 
-                    var winner = frogsAtI.Single();
-                    foreach (var i1 in winner.History)
-                    {
-                        Console.Write(i1 + " - ");
-                    }
+                    // var winner = frogsAtI.Single();
+                    // foreach (var i1 in winner.History)
+                    // {
+                    //     Console.Write(i1 + " - ");
+                    // }
                 }
 
                 //если больше - удаляем слабых 
@@ -248,11 +248,11 @@ namespace FrogTask
                     GameOver = true;
                     StepCounter = frog.JumpsCount;
                     
-                    foreach (var i1 in frog.History)
-                    {
-                        Console.Write(i1 + " - ");
-                    }
-                    return;
+                    // foreach (var i1 in frog.History)
+                    // {
+                    //     Console.Write(i1 + " - ");
+                    // }
+                    // return;
                 }
             }
         }
@@ -314,7 +314,7 @@ namespace FrogTask
             var falls = fallsAfterJumps as int[] ?? fallsAfterJumps.ToArray();
             var pop = new Population(jumps, falls);
             var res = pop.Simulate();
-            Console.WriteLine("\n"+res);
+            Console.WriteLine(res);
         }
     }
 
@@ -362,15 +362,13 @@ namespace FrogTask
                     h = 10;
                     avalibleJumps = new[]
                     {
-                        2, 
-                        2, 3, 0, 0, 
+                        2, 2, 3, 0, 0, 
                         4, 0, 1, 7, 6, 
                         9, 8, 5, 12
                     };
                     fallsAfterJumps = new[]
                     {
-                        1, 
-                        0, 0, 5, 6,
+                        1, 0, 0, 5, 6,
                         0, 2, 3, 1, 1, 
                         0, 2, 1, 0
                     };
