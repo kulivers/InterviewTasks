@@ -19,21 +19,21 @@ namespace FrogTask.Tests
 
             // TestCreatingAndKilling(pop);
             // TestCreatingFrogsOnAllPositions(pop);
-            
+
             pop.Frogs = GetMockFrogs(pop);
 
             foreach (var frog in pop.Frogs)
             {
-                if (frog.CurrentPointIdx ==1)
+                if (frog.CurrentPointIdx == 1)
                 {
                     pop.Frogs.Remove(frog);
                 }
             }
-            ShowFrogs(pop.Frogs.Where(f=>f.CurrentPointIdx==1));
-            
+
+            ShowFrogs(pop.Frogs.Where(f => f.CurrentPointIdx == 1));
         }
 
-        
+
         private static void ShowFrogs(IEnumerable<Frog> frogs)
         {
             foreach (var frog in frogs)

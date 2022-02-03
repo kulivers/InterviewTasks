@@ -30,10 +30,10 @@ namespace FrogTask
             CurrentPointIdx -= fallValue;
         }
 
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(JumpsCount, CurrentPointIdx, NextJumpValue);
-        }
+        // public override int GetHashCode()
+        // {
+        //     return HashCode.Combine(JumpsCount, CurrentPointIdx, NextJumpValue);
+        // }
     }
 
     public partial class Population
@@ -249,8 +249,16 @@ namespace FrogTask
             //     }
             // }
 
-            var ret = Frogs.RemoveWhere(f => f.CurrentPointIdx == 0);
+            // var ret = Frogs.RemoveWhere(f => f.CurrentPointIdx == 0);
+            foreach (var frog in Frogs)
+            {
+                if (frog.CurrentPointIdx == 0)
+                {
+                    Frogs.Remove(frog);
+                }
+            }
             
+
             // Frogs.RemoveWhere(f =>
             // {
             //     var isValInReached = ReachedPointsIdxs.ContainsKey(f.CurrentPointIdx); //delete
