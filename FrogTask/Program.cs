@@ -8,6 +8,7 @@ namespace FrogTask
 {
     public class Frog
     {
+        public List<int> History { get; set; }
         public int JumpsCount { get; set; } //set here best frog at this point
         public int CurrentPointIdx { get; set; }
         public int NextJumpValue { get; set; }
@@ -17,17 +18,20 @@ namespace FrogTask
             JumpsCount = jumpsCount;
             CurrentPointIdx = currentPoint;
             NextJumpValue = nextJumpValue;
+            History = new List<int>();
         }
 
         public void MakeJump()
         {
             CurrentPointIdx += NextJumpValue;
             JumpsCount++;
+            History.Add(CurrentPointIdx);
         }
 
         public void Fall(int fallValue)
         {
             CurrentPointIdx -= fallValue;
+            History.Add(CurrentPointIdx);
         }
 
         // public override int GetHashCode()
@@ -92,7 +96,23 @@ namespace FrogTask
 
                 if (!frogsAtI.Any())
                     throw new Exception("We cant create frogs where them doesnt exsts");
-                var maxAvailableJump = Jumps[i];
+                int maxAvailableJump;
+                try
+                {
+                    maxAvailableJump = Jumps[i];
+                }
+                catch (Exception e)
+                {
+                    maxAvailableJump = 1;
+                    GameOver = true;
+                    StepCounter = frogsAtI.Select(f => f.JumpsCount).First();
+
+                    var winner = frogsAtI.Single();
+                    foreach (var i1 in winner.History)
+                    {
+                        Console.Write(i1 + " - ");
+                    }
+                }
 
                 //если больше - удаляем слабых 
                 if (frogsAtI.Count() > maxAvailableJump)
@@ -126,7 +146,18 @@ namespace FrogTask
             void SetJumpValuesToFrogsAt(int i)
             {
                 var frogsAtI = Frogs.Where(f => f.CurrentPointIdx == i);
-                var maxAvailableJump = Jumps[i];
+                int maxAvailableJump;
+                try
+                {
+                    maxAvailableJump = Jumps[i];
+                }
+                catch (Exception e)
+                {
+                    maxAvailableJump = 1;
+                    GameOver = true;
+                    StepCounter = frogsAtI.Select(f => f.JumpsCount).First();
+                }
+
                 if (frogsAtI.Count() != maxAvailableJump)
                     throw new Exception("Frogs count != maxAvailableJump value");
 
@@ -155,7 +186,7 @@ namespace FrogTask
             Jumps = jumps;
             Falls = falls;
             Frogs = new HashSet<Frog>();
-            ReachedPointsIdxs = new Dictionary<int, int>//idx - reached
+            ReachedPointsIdxs = new Dictionary<int, int> //idx - reached
             {
                 { 0, 1 }
             };
@@ -212,14 +243,21 @@ namespace FrogTask
                     frog.CurrentPointIdx = 0;
                 }
 
-                if (frog.CurrentPointIdx> Jumps.Length)
+                if (frog.CurrentPointIdx > Jumps.Length - 1)
                 {
                     GameOver = true;
                     StepCounter = frog.JumpsCount;
+                    
+                    foreach (var i1 in frog.History)
+                    {
+                        Console.Write(i1 + " - ");
+                    }
+                    return;
                 }
             }
         }
-        public void SaveFrogsInReached() 
+
+        public void SaveFrogsInReached()
         {
             foreach (var frogPos in Frogs.Select(f => f.CurrentPointIdx))
             {
@@ -233,40 +271,13 @@ namespace FrogTask
 
         public void KillFrogsOnReachedPoss() //after jump - kill frogs on Reached positions
         {
-            //удалить фрогов у которых больше степов чем у лучшей?
-            
-            // foreach (var frog in Frogs)
-            // {
-            //     //just check, mb delete
-            //     var isValInReached = ReachedPointsIdxs.ContainsKey(frog.CurrentPointIdx); //comment
-            //     if (!isValInReached)
-            //         throw new Exception("why frog is on not reached once position?");
-            //
-            //     
-            //     if (ReachedPointsIdxs[frog.CurrentPointIdx] > 1)
-            //     {
-            //         Frogs.Remove(frog);
-            //     }
-            // }
-
-            // var ret = Frogs.RemoveWhere(f => f.CurrentPointIdx == 0);
             foreach (var frog in Frogs)
             {
-                if (frog.CurrentPointIdx == 0)
+                if (ReachedPointsIdxs[frog.CurrentPointIdx] > 1)
                 {
                     Frogs.Remove(frog);
                 }
             }
-            
-
-            // Frogs.RemoveWhere(f =>
-            // {
-            //     var isValInReached = ReachedPointsIdxs.ContainsKey(f.CurrentPointIdx); //delete
-            //     if (!isValInReached)
-            //         throw new Exception("why frog is on not reached once position?");
-            //     return ReachedPointsIdxs[f.CurrentPointIdx] > 1;
-            // });
-
         }
 
         public int Simulate()
@@ -282,8 +293,8 @@ namespace FrogTask
                     MakeJumpsAll();
                     MakeFallsAll();
                     ValidateFrogsPositionsAfterJump();
-                    KillFrogsOnReachedPoss();
                     SaveFrogsInReached();
+                    KillFrogsOnReachedPoss();
                     if (GameOver)
                         return StepCounter;
                 }
@@ -296,17 +307,19 @@ namespace FrogTask
     {
         static void Main(string[] args)
         {
-            // IOValuesHelper.GetMockValues(out int h, out IEnumerable<int> avalibleJumps, out IEnumerable<int> fallsAfterJumps);
+            // IOValuesHelper.GetMockValues(out int h, out IEnumerable<int> avalibleJumps,
+            //     out IEnumerable<int> fallsAfterJumps, variant: 3);
             IOValuesHelper.GetValues(out int h, out IEnumerable<int> avalibleJumps, out IEnumerable<int> fallsAfterJumps);
             var jumps = avalibleJumps as int[] ?? avalibleJumps.ToArray();
             var falls = fallsAfterJumps as int[] ?? fallsAfterJumps.ToArray();
             var pop = new Population(jumps, falls);
             var res = pop.Simulate();
-            Console.WriteLine("res: " + res);
+            Console.WriteLine("\n"+res);
         }
     }
 
     public class IOValuesHelper
+
     {
         public static void GetMockValues(out int h, out IEnumerable<int> avalibleJumps,
             out IEnumerable<int> fallsAfterJumps,
@@ -324,10 +337,45 @@ namespace FrogTask
                     };
                     fallsAfterJumps = new[]
                     {
-                        0, 2, 3, 4, 1,
+                        0, 2, 1, 4, 1,
                         4, 1, 2, 1, 1
                     };
                     break;
+                }
+                case 2:
+                {
+                    h = 10;
+                    avalibleJumps = new[]
+                    {
+                        2, 5, 4, 3, 1,
+                        4, 1, 2, 1, 1
+                    };
+                    fallsAfterJumps = new[]
+                    {
+                        0, 2, 1, 4, 1,
+                        4, 1, 2, 1, 0
+                    };
+                    break;
+                }
+                case 3:
+                {
+                    h = 10;
+                    avalibleJumps = new[]
+                    {
+                        2, 
+                        2, 3, 0, 0, 
+                        4, 0, 1, 7, 6, 
+                        9, 8, 5, 12
+                    };
+                    fallsAfterJumps = new[]
+                    {
+                        1, 
+                        0, 0, 5, 6,
+                        0, 2, 3, 1, 1, 
+                        0, 2, 1, 0
+                    };
+                    break;
+                    
                 }
                 default:
                 {
@@ -350,28 +398,12 @@ namespace FrogTask
             }
         }
 
-        public static IEnumerable<int> TwoSetsDifference(IEnumerable<int> fromEnumerable, IEnumerable<int> second)
-        {
-            var from = fromEnumerable as int[] ?? fromEnumerable.ToArray();
-            var secEnumerable = second as int[] ?? second.ToArray();
-
-            if (@from.Length != secEnumerable.Length)
-                throw new Exception("counts are not same");
-            var res = new List<int>();
-            for (var i = 0; i < @from.Length; i++)
-            {
-                res.Add(@from[i] - secEnumerable[i]);
-            }
-
-            return res;
-        }
-
         public static void GetValues(out int h, out IEnumerable<int> avalibleJumps,
             out IEnumerable<int> fallsAfterJumps)
         {
             while (true)
             {
-                Console.WriteLine("Input height:");
+                // Console.WriteLine("Input height:");
                 var val = Console.ReadLine();
                 if (int.TryParse(val, out h)) //check floating point validation?
                 {
@@ -381,12 +413,12 @@ namespace FrogTask
                     }
                 }
 
-                Console.WriteLine("wrong value, please input correct value");
+                // Console.WriteLine("wrong value, please input correct value");
             }
 
-            Console.WriteLine("input Avalible jumps values");
+            // Console.WriteLine("input Avalible jumps values");
             avalibleJumps = GetMultiSet(h);
-            Console.WriteLine("input falls After Jumps");
+            // Console.WriteLine("input falls After Jumps");
             fallsAfterJumps = GetMultiSet(h);
         }
 
@@ -408,7 +440,7 @@ namespace FrogTask
 
                     if (a < 1 || a > Math.Pow(10, 18))
                     {
-                        Console.WriteLine("wrong input, try again");
+                        // Console.WriteLine("wrong input, try again");
                         goto StartInput;
                     }
 
@@ -416,13 +448,13 @@ namespace FrogTask
                 }
             else
             {
-                Console.WriteLine("wrong input, try again");
+                // Console.WriteLine("wrong input, try again");
                 goto StartInput;
             }
 
             if (countOfDigits == n) return seq;
 
-            Console.WriteLine("wrong input, try again");
+            // Console.WriteLine("wrong input, try again");
             goto StartInput;
         }
     }
