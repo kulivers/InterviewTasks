@@ -17,7 +17,23 @@ namespace FrogTask.Tests
 
             IOValuesHelper.CoutSetByNRaws(avalibleJumps, 5);
 
-            TestCreatingAndKilling(pop);
+            // TestCreatingAndKilling(pop);
+            // TestCreatingFrogsOnAllPositions(pop);
+            
+        }
+
+        private static void ShowFrogs(IEnumerable<Frog> frogs)
+        {
+            foreach (var frog in frogs)
+            {
+                Console.WriteLine("i = " + frog.CurrentPointIdx + " | jump to: " + frog.NextJumpValue);
+            }
+        }
+
+        private static void TestCreatingFrogsOnAllPositions(Population pop)
+        {
+            pop.Frogs = GetMockFrogs(pop);
+            pop.CreateAllFrogsForAvailableJumps();
         }
 
         private static void TestCreatingAndKilling(Population pop)
@@ -41,13 +57,13 @@ namespace FrogTask.Tests
             frogs.Add(new Frog(1, 2, 4));
             frogs.Add(new Frog(1, 2, 4));
             frogs.Add(new Frog(1, 2, 4));
-            
+
             frogs.Add(new Frog(2, 2, 4));
             frogs.Add(new Frog(2, 2, 4));
             frogs.Add(new Frog(2, 2, 4));
             frogs.Add(new Frog(2, 2, 4));
             frogs.Add(new Frog(2, 2, 4));
-            
+
             return frogs.ToHashSet();
         }
     }

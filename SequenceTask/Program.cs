@@ -29,24 +29,22 @@ namespace SequenceTask
         {
             while (true)
             {
-                Console.WriteLine("Input n:");
+                // Console.WriteLine("Input n:");
                 var val = Console.ReadLine();
-                if (int.TryParse(val, out int n)) //check floating point validation?
+                if (!int.TryParse(val, out int n)) continue;
+                if (n >= 1 && n <= Math.Pow(10, 5))
                 {
-                    if (n >= 1 && n <= Math.Pow(10, 5))
-                    {
-                        return n;
-                    }
+                    return n;
                 }
 
-                Console.WriteLine("wrong value, please input correct value");
+                // Console.WriteLine("wrong value, please input correct value");
             }
         }
 
 
         private static IEnumerable<ulong> GetMultiSet(int n)
         {
-            Console.WriteLine($"now input {n} digits");
+            // Console.WriteLine($"now input {n} digits");
             var seq = new List<ulong>(n);
 
             int countOfDigits;
@@ -63,7 +61,7 @@ namespace SequenceTask
 
                     if (a < 1 || a > Math.Pow(10, 18))
                     {
-                        Console.WriteLine("wrong input, try again");
+                        // Console.WriteLine("wrong input, try again");
                         goto StartInput;
                     }
 
@@ -71,13 +69,13 @@ namespace SequenceTask
                 }
             else
             {
-                Console.WriteLine("wrong input, try again");
+                // Console.WriteLine("wrong input, try again");
                 goto StartInput;
             }
 
             if (countOfDigits == n) return seq;
 
-            Console.WriteLine("wrong input, try again");
+            // Console.WriteLine("wrong input, try again");
             goto StartInput;
         }
 

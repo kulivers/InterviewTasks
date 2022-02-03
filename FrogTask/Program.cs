@@ -19,12 +19,14 @@ namespace FrogTask
             NextJumpValue = nextJumpValue;
         }
 
-        static void MakeJump()
+        public void MakeJump()
         {
-            //check is it avalible на всякий
+            CurrentPointIdx += NextJumpValue;
+        }
 
-            //set new values
-            //set fall, if its <0 set 0
+        public void Fall(int fallValue)
+        {
+            CurrentPointIdx -= fallValue;
         }
 
         public override int GetHashCode()
@@ -33,7 +35,7 @@ namespace FrogTask
         }
     }
 
-    public partial  class Population
+    public partial class Population
     {
         public Frog GetBestFrogAt(int i)
         {
@@ -49,7 +51,7 @@ namespace FrogTask
         }
 
 
-        public void KillExcessFrogsAtPoint(int i)//need to test
+        public void KillExcessFrogsAtPoint(int i)
         {
             try
             {
@@ -77,10 +79,11 @@ namespace FrogTask
             Frogs.Add(new Frog(bestFrog.JumpsCount, bestFrog.CurrentPointIdx, nextJumpValue));
         }
 
-        public void CreateAndSetNewFrogsAt(int j)//need to test
+        public void CreateAndSetNewFrogsAt(int j)
         {
             ValidateFrogsCountAt(j);
             SetJumpValuesToFrogsAt(j);
+
             void ValidateFrogsCountAt(int i)
             {
                 //смотрим сколько есть
@@ -123,9 +126,9 @@ namespace FrogTask
             {
                 var frogsAtI = Frogs.Where(f => f.CurrentPointIdx == i);
                 var maxAvailableJump = Jumps[i];
-                if (frogsAtI.Count()!=maxAvailableJump)
+                if (frogsAtI.Count() != maxAvailableJump)
                     throw new Exception("Frogs count != maxAvailableJump value");
-                
+
                 var jumpValForFrog = maxAvailableJump;
                 foreach (var frog in frogsAtI)
                 {
@@ -158,19 +161,18 @@ namespace FrogTask
         }
 
 
-        public void CreateNewFrogsForAvailableJumps() //start from 0 idx, cuz we dont know where to jump
+        public void CreateAllFrogsForAvailableJumps() //start from 0 idx, cuz we dont know where to jump
         {
-            //dont create frogs in reached points
-
             //get фрогс позишонс
             //на этих позициях креэйт фрогс
-
-            //1 add one frog to fst position
-            //2 get frogs on way
-            //3 create available jumps frogs
+            var frogsPositions = Frogs.Select(f => f.CurrentPointIdx).ToHashSet();
+            foreach (var position in frogsPositions)
+            {
+                CreateAndSetNewFrogsAt(position);
+            }
         }
 
-        public void Kill_Bad_Frogs()
+        public void KillFrogsOnReachedPoss() //after jump - kill frogs on Reached positions
         {
             // if frog current point have been reached BEFORE - Kill frog
             //удалить фрогов у которых больше степов чем у лучшей
@@ -178,8 +180,20 @@ namespace FrogTask
             //если нету мест куда прыгнуть и не конец - убивать
         }
 
-        void MakeJumpsAll()
+        public void MakeJumpsAll()
         {
+            foreach (var frog in Frogs)
+            {
+                frog.MakeJump();
+            }
+        }
+
+        public void MakeFallsAll()
+        {
+            for (var i = 0; i < Falls.Length; i++)
+            {
+                
+            }
         }
 
         public int Simulate()
@@ -207,7 +221,8 @@ namespace FrogTask
     {
         static void Main(string[] args)
         {
-            IOValuesHelper.GetMockValues(out int h, out IEnumerable<int> avalibleJumps, out IEnumerable<int> fallsAfterJumps);
+            IOValuesHelper.GetMockValues(out int h, out IEnumerable<int> avalibleJumps,
+                out IEnumerable<int> fallsAfterJumps);
             var jumps = avalibleJumps as int[] ?? avalibleJumps.ToArray();
             var falls = fallsAfterJumps as int[] ?? fallsAfterJumps.ToArray();
             var pop = new Population(jumps, falls);
@@ -217,7 +232,8 @@ namespace FrogTask
 
     public class IOValuesHelper
     {
-        public static void GetMockValues(out int h, out IEnumerable<int> avalibleJumps, out IEnumerable<int> fallsAfterJumps,
+        public static void GetMockValues(out int h, out IEnumerable<int> avalibleJumps,
+            out IEnumerable<int> fallsAfterJumps,
             int variant = 1)
         {
             switch (variant)
@@ -274,7 +290,8 @@ namespace FrogTask
             return res;
         }
 
-        public static void GetValues(out int h, out IEnumerable<int> avalibleJumps, out IEnumerable<int> fallsAfterJumps)
+        public static void GetValues(out int h, out IEnumerable<int> avalibleJumps,
+            out IEnumerable<int> fallsAfterJumps)
         {
             while (true)
             {
