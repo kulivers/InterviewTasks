@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SequenceTask", "SequenceTas
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FrogTask", "FrogTask\FrogTask.csproj", "{71CBDCDE-E798-4AC2-A793-1680B45A0E6E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FrogTask.Tests", "FrogTask.Tests\FrogTask.Tests.csproj", "{5AF0A233-402D-4FBD-934A-8FE427124C87}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{71CBDCDE-E798-4AC2-A793-1680B45A0E6E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{71CBDCDE-E798-4AC2-A793-1680B45A0E6E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{71CBDCDE-E798-4AC2-A793-1680B45A0E6E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5AF0A233-402D-4FBD-934A-8FE427124C87}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5AF0A233-402D-4FBD-934A-8FE427124C87}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5AF0A233-402D-4FBD-934A-8FE427124C87}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5AF0A233-402D-4FBD-934A-8FE427124C87}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

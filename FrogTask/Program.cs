@@ -36,12 +36,19 @@ namespace FrogTask
     {
         public Frog GetBestFrogAt(int i)
         {
-            return Frogs.FirstOrDefault(f => f.CurrentPointIdx == i);
+            try
+            {
+                return Frogs.FirstOrDefault(f => f.CurrentPointIdx == i);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
 
-        
-        
-        public void KillExcessFrogsAtPoint(int i)
+
+        public void KillExcessFrogsAtPoint(int i)//need to test
         {
             try
             {
@@ -68,38 +75,64 @@ namespace FrogTask
             // KillExcessFrogsAtPoint(i); // we just add
             Frogs.Add(new Frog(bestFrog.JumpsCount, bestFrog.CurrentPointIdx, nextJumpValue));
         }
-        
-        public void CreateAndSetNewFrogsAt(int i)
+
+        public void CreateAndSetNewFrogsAt(int j)//need to test
         {
-            var frogsAtI = Frogs.Where(f => f.CurrentPointIdx == i);
-            
-            if (!frogsAtI.Any())
-                throw new Exception("We cant create frogs where them doesnt exsts");
-            var maxAvailableJump = Jumps[i];
-            
-            //смотрим сколько есть
-            //если больше - удаляем слабых 
-            //если все еще больше(у них будет одинаковое колво степов) - просто срезаем до количества нужного
-            //если меньше - добавляем нехватающих
-            //ставим им нужжные значения для прыжка
-            
-            if (frogsAtI.Count()>maxAvailableJump)
+            ValidateFrogsCountAt(j);
+
+            //ставим им нужжные значения для прыжка !!!
+            void ValidateFrogsCountAt(int i)
             {
-                KillExcessFrogsAtPoint(i);
+                //смотрим сколько есть
+                var frogsAtI = Frogs.Where(f => f.CurrentPointIdx == i).ToArray();
+
+                if (!frogsAtI.Any())
+                    throw new Exception("We cant create frogs where them doesnt exsts");
+                var maxAvailableJump = Jumps[i];
+
+                //если больше - удаляем слабых 
+                if (frogsAtI.Count() > maxAvailableJump)
+                {
+                    KillExcessFrogsAtPoint(i);
+                }
+
+                //если все еще больше(у них будет одинаковое колво степов) - просто срезаем до количества нужного
+                if (frogsAtI.Count() > maxAvailableJump) //they have same steps cuz we killed sillies
+                {
+                    var topNBestFrogs = Frogs.Take(maxAvailableJump).ToArray();
+                    Frogs.RemoveWhere(f => f.CurrentPointIdx == i);
+                    foreach (var frog in topNBestFrogs)
+                    {
+                        Frogs.Add(frog);
+                    }
+                }
+
+                //если меньше чем maxAvailableJump - добавляем нехватающих
+                if (frogsAtI.Count() < maxAvailableJump)
+                {
+                    var bestFrog = GetBestFrogAt(i);
+                    while (frogsAtI.Count() < maxAvailableJump)
+                    {
+                        Frogs.Add(new Frog(bestFrog.JumpsCount, bestFrog.CurrentPointIdx, bestFrog.NextJumpValue));
+                    }
+                }
             }
 
-            if (frogsAtI.Count() > maxAvailableJump)//they have same steps cuz we killed sillies
+            void SetJumpValuesToFrogsAt(int i)
             {
-                var bestStepCount = frogsAtI.First().JumpsCount;
-                while (frogsAtI.Count() != maxAvailableJump)
+                var frogsAtI = Frogs.Where(f => f.CurrentPointIdx == i);
+                var maxAvailableJump = Jumps[i];
+                if (frogsAtI.Count()!=maxAvailableJump)
+                    throw new Exception("Frogs count != maxAvailableJump value");
+                
+                var jumpValForFrog = maxAvailableJump;
+                foreach (var frog in frogsAtI)
                 {
-                    Убей всех лишних ляхушек пока их количество не станет  = maxAvailableJump 
+                    frog.NextJumpValue = jumpValForFrog;
+                    jumpValForFrog--;
                 }
-            }            
-            
-            
+            }
         }
-
     }
 
     partial class Population
@@ -124,7 +157,7 @@ namespace FrogTask
             Frogs.Add(new Frog(0, 0, Jumps[0]));
         }
 
-        
+
         public void CreateNewFrogsForAvailableJumps() //start from 0 idx, cuz we dont know where to jump
         {
             //dont create frogs in reached points
@@ -152,6 +185,7 @@ namespace FrogTask
         public int Simulate()
         {
             CreateAdam();
+            return 1;
             while (true)
             {
                 if (Frogs.Count == 0)
@@ -296,5 +330,10 @@ namespace FrogTask
             Console.WriteLine("wrong input, try again");
             goto StartInput;
         }
+    }
+
+    class InputValuesHelper
+    {
+        
     }
 }
