@@ -12,10 +12,11 @@ namespace FrogTask
         public int CurrentPointIdx { get; set; }
         public int NextJumpValue { get; set; }
 
-        public Frog(List<int>? previousSteps, int jumpsCount, int currentPoint)
+        public Frog(int jumpsCount, int currentPoint, int nextJumpValue)
         {
             JumpsCount = jumpsCount;
             CurrentPointIdx = currentPoint;
+            NextJumpValue = nextJumpValue;
         }
 
         static void SetNewJumpRules(int nextJumpValue)
@@ -38,11 +39,16 @@ namespace FrogTask
 
     partial class Population
     {
+        public Frog GetBestFrogAt(int i)
+        {
+            return Frogs.FirstOrDefault(f => f.CurrentPointIdx == i);
+        }
+
         public void KillExcessFrogsAtPoint(int i)
         {
             try
             {
-                var bestFrogCountAtI = Frogs.Where(f => f.CurrentPointIdx == 0).Select(f => f.JumpsCount).First();
+                var bestFrogCountAtI = Frogs.Where(f => f.CurrentPointIdx == i).Select(f => f.JumpsCount).First();
                 Frogs.RemoveWhere(f => f.JumpsCount > bestFrogCountAtI);
             }
             catch (Exception e)
@@ -54,7 +60,17 @@ namespace FrogTask
 
         public void AddFrogTo(int i, int nextJumpValue)
         {
-            // Frogs.Add()
+
+            var bestFrog = GetBestFrogAt(i);
+            
+            //del if works good
+            if (bestFrog == null)
+            {
+                throw new Exception("Place where we were add frog is empty");
+            }
+
+            KillExcessFrogsAtPoint(i);
+            Frogs.Add(new Frog(bestFrog.JumpsCount, bestFrog.CurrentPointIdx, nextJumpValue));
         }
     }
 
@@ -119,8 +135,6 @@ namespace FrogTask
             GetMockValues(out int h, out IEnumerable<int> avalibleJumps, out IEnumerable<int> fallsAfterJumps);
             var realJumpValues = TwoSetsDifference(avalibleJumps, fallsAfterJumps).ToArray();
             var pop = new Population(realJumpValues);
-
-            
         }
 
 
