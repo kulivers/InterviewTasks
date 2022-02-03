@@ -8,16 +8,18 @@ namespace FrogTask
 {
     class Frog
     {
-        public List<int> PreviousSteps { get; set; } //?
+        public List<int>? PreviousSteps { get; set; } //?
         public int JumpsCount { get; set; } //set here best frog at this point
-        public int CurrentPoint { get; set; }
+        public int CurrentPointIdx { get; set; }
         public int NextJumpValue { get; set; }
 
-        public Frog(List<int> previousSteps, int jumpsCount, int currentPoint) 
+        public Frog(List<int>? previousSteps, int jumpsCount, int currentPoint)
         {
+            JumpsCount = jumpsCount;
+            CurrentPointIdx = currentPoint;
         }
 
-        static void SetNewJumpRules(int nextJumpValue) 
+        static void SetNewJumpRules(int nextJumpValue)
         {
             //say to frog what she will do now
         }
@@ -28,54 +30,99 @@ namespace FrogTask
 
             //set new values
         }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(JumpsCount, CurrentPointIdx, NextJumpValue);
+        }
     }
 
-    class Population
+    partial class Population
     {
-        public List<Frog> Frogs { get; set; }
-        public List<int> ReachedPoints { get; set; }
-        public int StepCounter { get; set; }
-
-        public void CreateNewFrogsForAvailableJumps()
+        public void DeleteExcessFrogsAtPoint(int i)
         {
+            try
+            {
+                var bestFrogCountAtI = Frogs.Where(f => f.CurrentPointIdx == 0).Select(f => f.JumpsCount).First();
+                Frogs.RemoveWhere(f => f.JumpsCount > bestFrogCountAtI);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
+        public void AddFrogTo(int i, int nextJumpValue)
+        {
+            var frogsAtI = Frogs.Select(f => f).Where(f => f.CurrentPointIdx == i);
+            var availableJump = Way[i];
+        }
+    }
+
+    partial class Population
+    {
+        public HashSet<Frog> Frogs { get; set; }
+        public HashSet<int> ReachedPointsIdxs { get; set; }
+        public int StepCounter { get; set; }
+        public int[] Way { get; set; }
+
+        public Population(int[] way)
+        {
+            Way = way;
+            Frogs = new HashSet<Frog>();
+            ReachedPointsIdxs = new HashSet<int>();
+        }
+
+        public void CreateNewFrogsForAvailableJumps() //start from 0 idx, cuz we dont know where to jump
+        {
+            //dont create frogs in reached points
+
+            //1 add one frog to fst position
+            //2 get frogs on way
+            //3 create available jumps frogs
         }
 
         public void Kill_Bad_Frogs()
         {
             // if frog current point have been reached BEFORE - Kill frog
             //удалить фрогов у которых больше степов чем у лучшей
+
+            //если нету мест куда прыгнуть и не конец - убивать
         }
 
         void MakeJump()
         {
-            
         }
-        void Simulate()
+
+        int Simulate()
         {
             while (true)
             {
                 if (Frogs.Count == 0)
                 {
-                    Console.WriteLine("All frogs dead, way cant be reached");
-                    break;
+                    return -1;
                 }
                 else
                 {
-                    //удалить ненужных
-                    
                     //create недостающих фрогс, мб не делать где есть ричед после сл прыжка
-                    
+
+                    //удалить ненужных
                 }
             }
         }
     }
+
 
     class Program
     {
         static void Main(string[] args)
         {
             GetMockValues(out int h, out IEnumerable<int> avalibleJumps, out IEnumerable<int> fallsAfterJumps);
-            var realJumpValues = TwoSetsDifference(avalibleJumps, fallsAfterJumps);
+            var realJumpValues = TwoSetsDifference(avalibleJumps, fallsAfterJumps).ToArray();
+            var pop = new Population(realJumpValues);
+
+            
         }
 
 
@@ -129,9 +176,11 @@ namespace FrogTask
                     };
                     break;
                 }
+                default:
+                {
+                    throw new Exception("wrong variant");
+                }
             }
-
-            throw new Exception("wrong variant");
         }
 
         static void GetValues(out int h, out IEnumerable<int> avalibleJumps, out IEnumerable<int> fallsAfterJumps)
