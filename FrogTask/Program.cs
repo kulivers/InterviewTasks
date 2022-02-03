@@ -296,8 +296,8 @@ namespace FrogTask
     {
         static void Main(string[] args)
         {
-            IOValuesHelper.GetMockValues(out int h, out IEnumerable<int> avalibleJumps,
-                out IEnumerable<int> fallsAfterJumps);
+            // IOValuesHelper.GetMockValues(out int h, out IEnumerable<int> avalibleJumps, out IEnumerable<int> fallsAfterJumps);
+            IOValuesHelper.GetValues(out int h, out IEnumerable<int> avalibleJumps, out IEnumerable<int> fallsAfterJumps);
             var jumps = avalibleJumps as int[] ?? avalibleJumps.ToArray();
             var falls = fallsAfterJumps as int[] ?? fallsAfterJumps.ToArray();
             var pop = new Population(jumps, falls);
