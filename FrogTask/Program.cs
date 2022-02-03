@@ -19,11 +19,6 @@ namespace FrogTask
             NextJumpValue = nextJumpValue;
         }
 
-        static void SetNewJumpRules(int nextJumpValue)
-        {
-            //say to frog what she will do now
-        }
-
         static void MakeJump()
         {
             //check is it avalible на всякий
@@ -44,6 +39,8 @@ namespace FrogTask
             return Frogs.FirstOrDefault(f => f.CurrentPointIdx == i);
         }
 
+        
+        
         public void KillExcessFrogsAtPoint(int i)
         {
             try
@@ -60,18 +57,49 @@ namespace FrogTask
 
         public void AddFrogTo(int i, int nextJumpValue)
         {
-
             var bestFrog = GetBestFrogAt(i);
-            
+
             //del if works good
             if (bestFrog == null)
             {
                 throw new Exception("Place where we were add frog is empty");
             }
 
-            KillExcessFrogsAtPoint(i);
+            // KillExcessFrogsAtPoint(i); // we just add
             Frogs.Add(new Frog(bestFrog.JumpsCount, bestFrog.CurrentPointIdx, nextJumpValue));
         }
+        
+        public void CreateAndSetNewFrogsAt(int i)
+        {
+            var frogsAtI = Frogs.Where(f => f.CurrentPointIdx == i);
+            
+            if (!frogsAtI.Any())
+                throw new Exception("We cant create frogs where them doesnt exsts");
+            var maxAvailableJump = Jumps[i];
+            
+            //смотрим сколько есть
+            //если больше - удаляем слабых 
+            //если все еще больше(у них будет одинаковое колво степов) - просто срезаем до количества нужного
+            //если меньше - добавляем нехватающих
+            //ставим им нужжные значения для прыжка
+            
+            if (frogsAtI.Count()>maxAvailableJump)
+            {
+                KillExcessFrogsAtPoint(i);
+            }
+
+            if (frogsAtI.Count() > maxAvailableJump)//they have same steps cuz we killed sillies
+            {
+                var bestStepCount = frogsAtI.First().JumpsCount;
+                while (frogsAtI.Count() != maxAvailableJump)
+                {
+                    Убей всех лишних ляхушек пока их количество не станет  = maxAvailableJump 
+                }
+            }            
+            
+            
+        }
+
     }
 
     partial class Population
@@ -79,18 +107,30 @@ namespace FrogTask
         public HashSet<Frog> Frogs { get; set; }
         public HashSet<int> ReachedPointsIdxs { get; set; }
         public int StepCounter { get; set; }
-        public int[] Way { get; set; }
+        public int[] Jumps { get; set; }
 
-        public Population(int[] way)
+        public int[] Falls { get; set; }
+
+        public Population(int[] jumps, int[] falls)
         {
-            Way = way;
+            Jumps = jumps;
+            Falls = falls;
             Frogs = new HashSet<Frog>();
             ReachedPointsIdxs = new HashSet<int>();
         }
 
+        void CreateAdam() // first frog
+        {
+            Frogs.Add(new Frog(0, 0, Jumps[0]));
+        }
+
+        
         public void CreateNewFrogsForAvailableJumps() //start from 0 idx, cuz we dont know where to jump
         {
             //dont create frogs in reached points
+
+            //get фрогс позишонс
+            //на этих позициях креэйт фрогс
 
             //1 add one frog to fst position
             //2 get frogs on way
@@ -105,12 +145,13 @@ namespace FrogTask
             //если нету мест куда прыгнуть и не конец - убивать
         }
 
-        void MakeJump()
+        void MakeJumpsAll()
         {
         }
 
-        int Simulate()
+        public int Simulate()
         {
+            CreateAdam();
             while (true)
             {
                 if (Frogs.Count == 0)
@@ -133,10 +174,39 @@ namespace FrogTask
         static void Main(string[] args)
         {
             GetMockValues(out int h, out IEnumerable<int> avalibleJumps, out IEnumerable<int> fallsAfterJumps);
-            var realJumpValues = TwoSetsDifference(avalibleJumps, fallsAfterJumps).ToArray();
-            var pop = new Population(realJumpValues);
+            var jumps = avalibleJumps as int[] ?? avalibleJumps.ToArray();
+            var falls = fallsAfterJumps as int[] ?? fallsAfterJumps.ToArray();
+            var pop = new Population(jumps, falls);
+            pop.Simulate();
         }
 
+
+        static void GetMockValues(out int h, out IEnumerable<int> avalibleJumps, out IEnumerable<int> fallsAfterJumps,
+            int variant = 1)
+        {
+            switch (variant)
+            {
+                case 1:
+                {
+                    h = 10;
+                    avalibleJumps = new[]
+                    {
+                        2, 5, 4, 3, 1,
+                        4, 1, 2, 1, 1
+                    };
+                    fallsAfterJumps = new[]
+                    {
+                        0, 2, 3, 4, 1,
+                        4, 1, 2, 1, 1
+                    };
+                    break;
+                }
+                default:
+                {
+                    throw new Exception("wrong variant");
+                }
+            }
+        }
 
         static void CoutSetByNRaws(IEnumerable<int> arrr, int n)
         {
@@ -166,33 +236,6 @@ namespace FrogTask
             }
 
             return res;
-        }
-
-        static void GetMockValues(out int h, out IEnumerable<int> avalibleJumps, out IEnumerable<int> fallsAfterJumps,
-            int variant = 1)
-        {
-            switch (variant)
-            {
-                case 1:
-                {
-                    h = 10;
-                    avalibleJumps = new[]
-                    {
-                        2, 5, 4, 3, 1,
-                        4, 1, 2, 1, 1
-                    };
-                    fallsAfterJumps = new[]
-                    {
-                        1, 2, 3, 4, 1,
-                        4, 1, 2, 1, 1
-                    };
-                    break;
-                }
-                default:
-                {
-                    throw new Exception("wrong variant");
-                }
-            }
         }
 
         static void GetValues(out int h, out IEnumerable<int> avalibleJumps, out IEnumerable<int> fallsAfterJumps)
