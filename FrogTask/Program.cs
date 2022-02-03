@@ -8,7 +8,6 @@ namespace FrogTask
 {
     class Frog
     {
-        public List<int>? PreviousSteps { get; set; } //?
         public int JumpsCount { get; set; } //set here best frog at this point
         public int CurrentPointIdx { get; set; }
         public int NextJumpValue { get; set; }
@@ -39,7 +38,7 @@ namespace FrogTask
 
     partial class Population
     {
-        public void DeleteExcessFrogsAtPoint(int i)
+        public void KillExcessFrogsAtPoint(int i)
         {
             try
             {
@@ -55,8 +54,7 @@ namespace FrogTask
 
         public void AddFrogTo(int i, int nextJumpValue)
         {
-            var frogsAtI = Frogs.Select(f => f).Where(f => f.CurrentPointIdx == i);
-            var availableJump = Way[i];
+            // Frogs.Add()
         }
     }
 
