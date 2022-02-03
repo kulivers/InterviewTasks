@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 
 namespace FrogTask
 {
-    class Frog
+    public class Frog
     {
         public int JumpsCount { get; set; } //set here best frog at this point
         public int CurrentPointIdx { get; set; }
@@ -24,6 +24,7 @@ namespace FrogTask
             //check is it avalible на всякий
 
             //set new values
+            //set fall, if its <0 set 0
         }
 
         public override int GetHashCode()
@@ -32,7 +33,7 @@ namespace FrogTask
         }
     }
 
-    partial class Population
+    public partial  class Population
     {
         public Frog GetBestFrogAt(int i)
         {
@@ -79,12 +80,11 @@ namespace FrogTask
         public void CreateAndSetNewFrogsAt(int j)//need to test
         {
             ValidateFrogsCountAt(j);
-
-            //ставим им нужжные значения для прыжка !!!
+            SetJumpValuesToFrogsAt(j);
             void ValidateFrogsCountAt(int i)
             {
                 //смотрим сколько есть
-                var frogsAtI = Frogs.Where(f => f.CurrentPointIdx == i).ToArray();
+                var frogsAtI = Frogs.Where(f => f.CurrentPointIdx == i);
 
                 if (!frogsAtI.Any())
                     throw new Exception("We cant create frogs where them doesnt exsts");
@@ -118,6 +118,7 @@ namespace FrogTask
                 }
             }
 
+            //ставим им нужжные значения для прыжка !!!
             void SetJumpValuesToFrogsAt(int i)
             {
                 var frogsAtI = Frogs.Where(f => f.CurrentPointIdx == i);
@@ -135,13 +136,12 @@ namespace FrogTask
         }
     }
 
-    partial class Population
+    public partial class Population
     {
         public HashSet<Frog> Frogs { get; set; }
         public HashSet<int> ReachedPointsIdxs { get; set; }
         public int StepCounter { get; set; }
         public int[] Jumps { get; set; }
-
         public int[] Falls { get; set; }
 
         public Population(int[] jumps, int[] falls)
@@ -207,15 +207,17 @@ namespace FrogTask
     {
         static void Main(string[] args)
         {
-            GetMockValues(out int h, out IEnumerable<int> avalibleJumps, out IEnumerable<int> fallsAfterJumps);
+            IOValuesHelper.GetMockValues(out int h, out IEnumerable<int> avalibleJumps, out IEnumerable<int> fallsAfterJumps);
             var jumps = avalibleJumps as int[] ?? avalibleJumps.ToArray();
             var falls = fallsAfterJumps as int[] ?? fallsAfterJumps.ToArray();
             var pop = new Population(jumps, falls);
             pop.Simulate();
         }
+    }
 
-
-        static void GetMockValues(out int h, out IEnumerable<int> avalibleJumps, out IEnumerable<int> fallsAfterJumps,
+    public class IOValuesHelper
+    {
+        public static void GetMockValues(out int h, out IEnumerable<int> avalibleJumps, out IEnumerable<int> fallsAfterJumps,
             int variant = 1)
         {
             switch (variant)
@@ -242,7 +244,7 @@ namespace FrogTask
             }
         }
 
-        static void CoutSetByNRaws(IEnumerable<int> arrr, int n)
+        public static void CoutSetByNRaws(IEnumerable<int> arrr, int n)
         {
             var arr = arrr.ToArray();
             for (int i = 0, nr = 1; i < arr.Count(); i++, nr++)
@@ -256,23 +258,23 @@ namespace FrogTask
             }
         }
 
-        static IEnumerable<int> TwoSetsDifference(IEnumerable<int> fromEnumerable, IEnumerable<int> second)
+        public static IEnumerable<int> TwoSetsDifference(IEnumerable<int> fromEnumerable, IEnumerable<int> second)
         {
             var from = fromEnumerable as int[] ?? fromEnumerable.ToArray();
             var secEnumerable = second as int[] ?? second.ToArray();
 
-            if (from.Length != secEnumerable.Length)
+            if (@from.Length != secEnumerable.Length)
                 throw new Exception("counts are not same");
             var res = new List<int>();
-            for (var i = 0; i < from.Length; i++)
+            for (var i = 0; i < @from.Length; i++)
             {
-                res.Add(from[i] - secEnumerable[i]);
+                res.Add(@from[i] - secEnumerable[i]);
             }
 
             return res;
         }
 
-        static void GetValues(out int h, out IEnumerable<int> avalibleJumps, out IEnumerable<int> fallsAfterJumps)
+        public static void GetValues(out int h, out IEnumerable<int> avalibleJumps, out IEnumerable<int> fallsAfterJumps)
         {
             while (true)
             {
@@ -295,7 +297,7 @@ namespace FrogTask
             fallsAfterJumps = GetMultiSet(h);
         }
 
-        private static IEnumerable<int> GetMultiSet(int n)
+        public static IEnumerable<int> GetMultiSet(int n)
         {
             var seq = new List<int>(n);
 
@@ -330,10 +332,5 @@ namespace FrogTask
             Console.WriteLine("wrong input, try again");
             goto StartInput;
         }
-    }
-
-    class InputValuesHelper
-    {
-        
     }
 }
